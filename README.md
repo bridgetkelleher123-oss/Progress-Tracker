@@ -34,10 +34,6 @@ import zmq
 # Set up socket
 context = zmq.Context()
 
-print("Connecting to server...")
-
-MESSAGE = "This is a message from CS361"
-
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:5353")
 
@@ -87,12 +83,15 @@ socket.send_json(in_json)
 ### IMPORTANT: End the program
 
 progress_tracker is designed to continuously wait for new input until told to end.
-To end progress_tracker, send it the following JSON object:
+To end progress_tracker, send the following:
 
-~~~json
-{
+~~~python
+request = {
     "end": True
 }
+socket.send_json(request)
+
+df.join()
 ~~~
 
 Make sure to end progress tracker when finished using it.
