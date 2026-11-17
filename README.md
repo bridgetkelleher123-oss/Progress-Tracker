@@ -4,7 +4,7 @@
 
 This Microservice takes 3 inputs:
 
-- An array of JSON objects that all contain at least one identical identical name
+- An array of JSON objects that all contain at least one identical name
 - a string representing the name of the value to search for
 - A value to check for
 
