@@ -4,6 +4,7 @@ import multiprocessing as mp
 import subprocess as sp
 import json
 import zmq
+from pprint import pprint
 
 #Create data sets to test
 TEST_DATA_BOOL_VALID = [
