@@ -177,6 +177,20 @@ pprint(in_dict)
 show_validity(in_dict)
 print("\n")
 
+print("-" * 50)
+print("Demo empty list")
+print("-" * 50)
+
+in_dict = {
+    "check_data": [],
+    "check_name": "completed",
+    "check_value": True
+}
+
+pprint(in_dict)
+show_validity(in_dict)
+print("\n")
+
 ###################################################################################################
 # Valid Data
 ###################################################################################################

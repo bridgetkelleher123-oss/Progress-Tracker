@@ -26,6 +26,15 @@ def get_count(check_list: list[dict], check_name: str, check_value) -> dict["val
                                                                            "error_msg":str]:
     """Return error message, or count and percentage of dicts containing check_value
     at check_name."""
+
+    if len(check_list) == 0:
+        return {
+            "valid" : False,
+            "count" : None,
+            "percentage": None,
+            "error_msg": "ERROR: check_data cannot be empty."
+        }
+    
     count = 0
     for check_dict in check_list:
         if not isinstance(check_dict, dict):
