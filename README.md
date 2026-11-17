@@ -17,17 +17,30 @@ It outputs:
 
 Navigate into the directory containing progress_tracker.py and execute the following:
 
-~~~text
-python -m venv .venv
+```bash
+python3 -m venv .venv
+```
+
+For macOS/Linux:
+```bash
+source .venv/bin/activate
+```
+
+For Windows PowerShell:
+```powershell
 .\.venv\Scripts\Activate.ps1
+```
+
+Then install the dependencies:
+```bash
 python -m pip install -r requirements.txt
-~~~
+```
 
 ## Input and Retreival
 
 ~~~python
-import multiprocessing as mp
 import subprocess as sp
+import sys
 import json
 import zmq
 
@@ -38,11 +51,7 @@ socket = context.socket(zmq.REQ)
 socket.connect("tcp://localhost:5353")
 
 # Run Progress tracker as a subprocess
-def run_p_tracker():
-    sp.run(["python3", "./progress_tracker.py"])
-
-pt = mp.Process(target=run_p_tracker)
-pt.start()
+pt = sp.Popen([sys.executable, "progress_tracker.py"])
 
 # Create a list of dictionaries you want to search through. Here we will use:
 TEST_DATA_BOOL_VALID = [
@@ -62,21 +71,27 @@ in_dict = {
 
 # Format input and send to progress_tracker
 input_json = json.dumps(in_dict)
-socket.send_json(in_json)
+socket.send_json(input_json)
 
 # Receive output from progress_tracker
 output_json = socket.recv_json()
 output_dict = json.loads(output_json)
 
 print(output_dict)
-# {"valid": True, "count": 3, "percentage": 60.0, "error_msg": ""}
+# {"valid": True, "count": 3, "percentage": 60.0, "error_msg": None}
 
 # End the program: When finished, send an end message to progress_tracker
 in_dict = {
     "end": True
 }
 input_json = json.dumps(in_dict)
-socket.send_json(in_json)
+socket.send_json(input_json)
+
+output_json = socket.recv_json()
+output_dict = json.loads(output_json)
+
+print(output_dict)
+pt.wait()
 
 ~~~
 
@@ -86,12 +101,14 @@ progress_tracker is designed to continuously wait for new input until told to en
 To end progress_tracker, send the following:
 
 ~~~python
-request = {
-    "end": True
-}
-socket.send_json(request)
+request = {"end": True}
 
-df.join()
+socket.send_json(json.dumps(request))
+
+response_json = socket.recv_json()
+response = json.loads(response_json)
+
+pt.wait()
 ~~~
 
 Make sure to end progress tracker when finished using it.
@@ -122,6 +139,7 @@ Output is a JSON object containing four keys: "valid", "count", "percentage", an
 |"ERROR: Missing input."                                     |One or more of the three needed keys are missing from the input.|
 |"ERROR: invalid check_data. must be list."                  |Value input at key check_data is not a list.                       |
 |"error_msg": "ERROR: invalid check_name. must be string."   |value input at key check_name is not a string.                     |
+| "ERROR: check_data cannot be empty." | The input list is empty, so a percentage cannot be calculated. |
 
 ## UML Diagram
 
