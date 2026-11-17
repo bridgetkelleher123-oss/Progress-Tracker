@@ -5,6 +5,7 @@ import subprocess as sp
 import json
 import zmq
 from pprint import pprint
+import sys
 
 #Create data sets to test
 TEST_DATA_BOOL_VALID = [
@@ -72,11 +73,7 @@ def show_validity (display_dict: dict):
     else:
         print(output_dict["error_msg"])
 
-def run_p_tracker():
-    sp.run(["python3", "./progress_tracker.py"])
-
-pt = mp.Process(target=run_p_tracker)
-pt.start()
+pt = sp.Popen([sys.executable, "progress_tracker.py"])
 
 ###################################################################################################
 ###################################################################################################
@@ -180,6 +177,20 @@ pprint(in_dict)
 show_validity(in_dict)
 print("\n")
 
+print("-" * 50)
+print("Demo empty list")
+print("-" * 50)
+
+in_dict = {
+    "check_data": [],
+    "check_name": "completed",
+    "check_value": True
+}
+
+pprint(in_dict)
+show_validity(in_dict)
+print("\n")
+
 ###################################################################################################
 # Valid Data
 ###################################################################################################
@@ -226,5 +237,5 @@ in_dict = {
 pprint(in_dict)
 show_validity(in_dict)
 
-pt.join()
+pt.wait()
 print("Test concluded.")
